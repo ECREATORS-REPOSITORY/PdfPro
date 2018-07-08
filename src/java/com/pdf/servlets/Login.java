@@ -6,7 +6,9 @@
 package com.pdf.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -71,21 +73,43 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        String username=request.getParameter("username");
-        String password=request.getParameter("password");
-        if(username.equalsIgnoreCase("vishal")&& password.equalsIgnoreCase("admin"))
+       String password=request.getParameter("password");
+       ClassLoader classLoader = Thread.currentThread().getContextClassLoader();       
+       InputStream input = classLoader.getResourceAsStream("pdfData.properties");
+        System.out.println("Loadinf");
+        Properties prop = new Properties();
+        prop.load(input);
+       String Credential= prop.getProperty("Credential");
+       String str[]=Credential.split(",");
+          System.out.println("Loadinf222");
+       boolean login=false;
+       for(int i=0;i<str.length;i++)
+       {
+           String getCrd[]=str[i].split("@");
+          if(getCrd[0].equalsIgnoreCase(username) && getCrd[1].equalsIgnoreCase(password))
+          {
+              login=true;
+              break;
+          }
+       }
+        
+        if(login)
         {
+            System.out.println("Inside login");
             response.sendRedirect("UploadFile.jsp");
         }
-    }
+        else
+        {
+            response.sendRedirect("index.html");
+            
+            
+         }
 
     /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+  
+    }
 }
